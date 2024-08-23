@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationManagerResolver;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,6 +30,7 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .cors().and().authorizeHttpRequests()
+                .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/**").hasAnyRole("ADMIN","CUSTOMER")
                 .requestMatchers(HttpMethod.POST,"/api/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT).denyAll()
@@ -42,6 +44,12 @@ public class SecurityConfig {
 
         return new InMemoryUserDetailsManager(admin);
     }*/
+
+    @Bean
+    public AuthenticationManager authenticate(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
